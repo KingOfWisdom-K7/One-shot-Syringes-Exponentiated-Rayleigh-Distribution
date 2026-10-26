@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One-Shot Syringes Reliability Acceptance Sampling Plan</title>
+    <!-- Include Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Include Chart.js via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Include Chart.js datalabels plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <style>
+        /* Global Font Override to Times New Roman */
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            background-color: #f3f4f6;
+        }
+        .dashboard-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            max-width: 1400px;
+            margin: auto;
+            padding: 2rem;
+        }
+        .dashboard-card {
+            background-color: #ffffff;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        label {
+            font-weight: bold;
+            color: #4b5563;
+        }
+        select, input {
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            background-color: #ffffff;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            font-family: 'Times New Roman', Times, serif;
+        }
+        select:focus, input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+        }
+        .btn {
+            background-color: #3b82f6;
+            color: #ffffff;
+            transition: transform 0.3s, background-color 0.3s;
+            cursor: pointer;
+            font-family: 'Times New Roman', Times, serif;
+        }
+        .btn:hover {
+            transform: scale(1.02);
+            background-color: #2563eb;
+        }
+        .metric-box {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        .metric-value {
+            font-size: 2rem; 
+            font-weight: bold;
+            line-height: 1;
+            margin-top: 0.25rem;
+        }
+        /* Color mapping for text */
+        .val-q1 { color: #dc2626; } /* Red */
+        .val-q2 { color: #059669; } /* Green */
+        .val-joint { color: #7c3aed; } /* Purple */
+    </style>
+</head>
+<body class="bg-gray-100 p-4">
+
+    <div class="dashboard-container">
+        <!-- Main Topic -->
+        <div class="text-center">
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-2">
+                Reliability Attribute Acceptance Sampling Plans
+            </h1>
+            <p class="text-xl text-gray-700">
+                Bivariate Poisson Distribution with Exponentiated Rayleigh Distribution (One-shot Syringes)
+            </p>
+        </div>
+
+        <!-- Global Input Card -->
+        <div class="dashboard-card" style="max-width: 900px;">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4 text-center">
+                Configure Test Parameters
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                <div class="input-group">
+                    <label for="p-star">Confidence Level (P*):</label>
+                    <select id="p-star" class="rounded-lg">
+                        <option value="0.75">0.75</option>
+                        <option value="0.90">0.90</option>
+                        <option value="0.95">0.95</option>
+                        <option value="0.99">0.99</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="t-mu">Test Ratio (t/t₀.₁⁰):</label>
+                    <select id="t-mu" class="rounded-lg">
+                        <option value="0.7">0.7</option>
+                        <option value="0.9">0.9</option>
+                        <option value="1.0">1.0</option>
+                        <option value="1.25">1.25</option>
+                        <option value="1.5" selected>1.5</option>
+                        <option value="1.75">1.75</option>
+                        <option value="2.0">2.0</option>
+                        <option value="2.25">2.25</option>
+                        <option value="2.5">2.5</option>
+                        <option value="3.0">3.0</option>
+                        <option value="3.5">3.5</option>
+                        <option value="4.0">4.0</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="c1-value">Visible Flaws (c₁):</label>
+                    <select id="c1-value" class="rounded-lg">
+                        <option value="1">1</option>
+                        <option value="2" selected>2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="c2-value">Injection Force (c₂):</label>
+                    <select id="c2-value" class="rounded-lg">
+                        <option value="1">1</option>
+                        <option value="2" selected>2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                    </select>
+                </div>
+            </div>
+
+            <button id="calculate-btn" class="btn font-semibold py-3 px-6 rounded-lg w-full text-lg shadow-lg">
+                Calculate Joint Bivariate Framework
+            </button>
+        </div>
+
+        <!-- Results Comparison Grid (Individual Charts) -->
+        <div id="results-grid" class="w-full max-w-3xl mx-auto opacity-50 pointer-events-none transition-opacity duration-300">
+            
+            <!-- Bivariate Joint (Purple) -->
+            <div class="dashboard-card border-t-4 border-purple-500">
+                <h3 class="text-2xl font-bold text-gray-800 text-center">Joint Inspection</h3>
+                <p class="text-md text-gray-500 text-center mb-4">Bivariate Poisson (c₁, c₂)</p>
+                <div class="metric-box bg-purple-50 border-purple-100">
+                    <p class="text-sm font-medium text-gray-600">Min. Sample Size (n)</p>
+                    <p id="n-joint" class="metric-value val-joint">--</p>
+                </div>
+                <div class="flex-grow relative" style="min-height: 450px;">
+                    <canvas id="chart-joint"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        // ---------------- MATHEMATICAL FUNCTIONS ----------------
+
+        // Exponentiated Rayleigh Distribution (ERD) CDF
+        // For q = 0.1 (10th percentile) and theta = 2
+        function erdCDF(delta) {
+            const theta = 2.0;
+            const q = 0.1;
+            // eta = sqrt(-2 * ln(1 - q^(1/theta)))
+            const eta = Math.sqrt(-2.0 * Math.log(1.0 - Math.pow(q, 1.0 / theta)));
+            // p = [1 - exp(-0.5 * (eta * delta)^2)]^theta
+            const exponent = -0.5 * Math.pow(eta * delta, 2);
+            return Math.pow(1.0 - Math.exp(exponent), theta);
+        }
+
+        // Poisson Cumulative Distribution Function Summation
+        function poissonCDF(mu, c) {
+            let term = Math.exp(-mu);
+            let sum = term;
+            for (let i = 1; i <= c; i++) {
+                term = term * (mu / i);
+                sum += term;
+            }
+            return sum;
+        }
+
+        // Dynamically search for minimum sample size 'n'
+        function calculateMinimumSampleSize(dist, P_star, delta_0, c1, c2) {
+            let p_fail = erdCDF(delta_0);
+            let target = 1 - P_star;
+            let max_n = 3000; // Upper limit safety
+
+            for (let n = 1; n <= max_n; n++) {
+                let prob = 0;
+                let mu = n * p_fail;
+                
+                if (dist === 'joint') {
+                    prob = poissonCDF(mu, c1) * poissonCDF(mu, c2);
+                }
+
+                if (prob <= target) {
+                    return n;
+                }
+            }
+            return "Limit Exceeded";
+        }
+
+        // Calculate OC values dynamically for given true mean ratios
+        function calculateOCValues(dist, n, delta_0, c1, c2) {
+            // X-axis: d_q = t_0.1 / t_0.1^0
+            let dq_ratios = [0.75, 1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 2.75];
+            let oc_vals = [];
+
+            for (let dq of dq_ratios) {
+                // delta = (t / t_0.1^0) / (t_0.1 / t_0.1^0) = t / t_0.1
+                let delta = delta_0 / dq;
+                let p_fail = erdCDF(delta);
+                let mu = n * p_fail;
+                let prob = 0;
+
+                if (dist === 'joint') {
+                    prob = poissonCDF(mu, c1) * poissonCDF(mu, c2); 
+                }
+                oc_vals.push(prob);
+            }
+            return oc_vals;
+        }
+
+        // ---------------- CHART LOGIC ----------------
+
+        const dqHeaders = ["0.75", "1.00", "1.25", "1.50", "1.75", "2.00", "2.25", "2.50", "2.75"];
+        
+        let charts = {};
+        let combinedChart;
+
+        // Force Chart.js to use Times New Roman globally
+        Chart.defaults.font.family = "'Times New Roman', Times, serif";
+
+        // Reusable chart initialization function for the 3 individual grids
+        function initChart(canvasId, colorHex) {
+            Chart.register(ChartDataLabels);
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            return new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dqHeaders,
+                    datasets: [{
+                        label: 'Pa(p)',
+                        data: [],
+                        borderColor: colorHex,
+                        backgroundColor: colorHex + '33', // 20% opacity fill
+                        borderWidth: 3,
+                        pointRadius: 5,
+                        pointBackgroundColor: colorHex,
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        datalabels: {
+                            display: true,
+                            color: '#1f2937',
+                            font: { weight: 'bold', size: 11, family: "'Times New Roman', Times, serif" },
+                            anchor: 'end',
+                            align: 'top',
+                            offset: 4,
+                            formatter: (value) => value.toFixed(3)
+                        },
+                        title: {
+                            display: true,
+                            text: 'Operating Characteristic Curve',
+                            font: { size: 16, weight: 'bold', family: "'Times New Roman', Times, serif" },
+                            padding: { bottom: 20 }
+                        }
+                    },
+                    layout: {
+                        padding: { top: 25, right: 15 }
+                    },
+                    scales: {
+                        x: { 
+                            title: { display: true, text: 't₀.₁ / t₀.₁⁰', font: { weight: 'bold'} },
+                            grid: { display: false } 
+                        },
+                        y: { 
+                            title: { display: true, text: 'Acceptance Prob Pa(p)', font: { size: 14, weight: 'bold'} }, 
+                            min: 0, 
+                            max: 1.0, 
+                            afterBuildTicks: function(axis) {
+                                axis.ticks = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0].map(v => ({ value: v }));
+                            },
+                            grid: { display: false } 
+                        }
+                    }
+                }
+            });
+        }
+
+        window.onload = function() {
+            // Initialize chart (Joint Purple)
+            charts['joint'] = initChart('chart-joint', '#7c3aed'); 
+
+            const calculateBtn = document.getElementById('calculate-btn');
+            const resultsGrid = document.getElementById('results-grid');
+
+            calculateBtn.addEventListener('click', () => {
+                // Fetch user inputs
+                const P_star = parseFloat(document.getElementById('p-star').value);
+                const delta_0 = parseFloat(document.getElementById('t-mu').value);
+                const c1 = parseInt(document.getElementById('c1-value').value);
+                const c2 = parseInt(document.getElementById('c2-value').value);
+
+                // Framework definitions
+                const fw = { id: 'joint', domId: 'n-joint', name: `Joint Bivariate (c₁=${c1}, c₂=${c2})` };
+
+                // Execute logic for Joint framework
+                // 1. Compute Exact Minimum Sample Size
+                const n = calculateMinimumSampleSize(fw.id, P_star, delta_0, c1, c2);
+                document.getElementById(fw.domId).textContent = n;
+
+                // 2. Generate Exact OC Graph Data
+                if (typeof n === 'number') {
+                    const ocValues = calculateOCValues(fw.id, n, delta_0, c1, c2);
+                    charts[fw.id].data.datasets[0].data = ocValues;
+                } else {
+                    charts[fw.id].data.datasets[0].data = [];
+                }
+                charts[fw.id].update();
+
+                // Remove opacity to reveal results
+                resultsGrid.classList.remove('opacity-50', 'pointer-events-none');
+            });
+            
+            // Trigger calculation on initial load
+            calculateBtn.click();
+        };
+    </script>
+</body>
+</html>
